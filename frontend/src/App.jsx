@@ -155,7 +155,7 @@ const App = () => {
       {/* Header with user info and controls */}
       <header className="header">
         <div className="header-content">
-          <h1>AI/BI Dashboard</h1>
+          <h1>AI/BI External Embedding</h1>
           
           <div className="user-info">
             <div className="current-user">
