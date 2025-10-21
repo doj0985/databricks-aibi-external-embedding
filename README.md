@@ -159,19 +159,6 @@ await dashboard.initialize()
 
 ## Key Configuration
 
-### Backend → Frontend Communication
-
-**API Proxy** (`frontend/vite.config.js`):
-```javascript
-proxy: {
-  '/api': {
-    target: 'http://localhost:5000'  // Routes /api/* to Flask backend
-  }
-}
-```
-
-**Session Management**: Flask sessions track logged-in users, frontend sends cookies with `withCredentials: true`
-
 ### Row-Level Security
 
 The backend passes user context when minting tokens:
@@ -184,7 +171,7 @@ token_info_url = (
 )
 ```
 
-In your Databricks dashboard dataset, filter using `aibi_external_value`:
+In your Databricks dashboard dataset, filter using `__aibi_external_value`:
 ```sql
 SELECT * FROM sales_data
 WHERE department = __aibi_external_value  -- Returns "Sales" for Alice, "Engineering" for Bob
@@ -216,11 +203,6 @@ code .env  # Edit with your actual Databricks credentials
 python app.py  # Runs on http://localhost:5000
 ```
 
-**Security Note:**
-- ⚠️ **NEVER commit `.env` to version control** - it contains your real credentials
-- ✅ `.env` is already in `.gitignore` and will not be tracked by git
-- ✅ Only commit `.env.example` with placeholder values
-
 ### 2. Frontend Setup
 
 ```bash
@@ -230,13 +212,6 @@ npm run dev  # Runs on http://localhost:3000
 ```
 
 **Key Dependency:** This template uses the official [@databricks/aibi-client](https://www.npmjs.com/package/@databricks/aibi-client) npm package (v1.0.0) for dashboard embedding.
-
-### 3. Try It Out
-
-1. Open http://localhost:3000
-2. Click "Alice Johnson" or "Bob Smith" to login
-3. Dashboard loads with that user's token
-4. Switch users to see the token refresh
 
 ## Understanding the Flow
 
@@ -298,7 +273,7 @@ Start with these files to understand the core flow:
 |-------------------|---------|
 | `App.jsx` | Main app - handles auth and state |
 | `DashboardEmbed.jsx` | Embeds dashboard using Databricks SDK |
-| `handleLogin()` | Sends credentials to backend |
+| `handleLogin()` | Sends username to backend |
 | `fetchDashboardConfig()` | Gets dashboard config and token |
 
 ## 🔧 Customization Points
@@ -333,19 +308,16 @@ Start with these files to understand the core flow:
 ## ❓ Common Questions
 
 **Q: Where is the OAuth token generated?**  
-A: In `backend/app.py`, function `mint_databricks_token()` (starts at line 57) using the official Databricks 3-step OAuth flow
+A: In `backend/app.py`, function `mint_databricks_token()` (starts at line 55) using the 3-step OAuth flow
 
 **Q: How does the frontend get the token?**  
-A: Calls `/api/dashboard/embed-config` endpoint which returns the token (line 219 in `app.py`)
+A: Calls `/api/dashboard/embed-config` endpoint which returns the token (line 216 in `app.py`)
 
 **Q: How is the dashboard embedded?**  
-A: Using `@databricks/aibi-client` SDK in `frontend/src/components/DashboardEmbed.jsx` with static import from CDN
-
-**Q: How does user switching work?**  
-A: Logs out current user, logs in new user, fetches new token (see `handleUserSwitch()` at line 94 in `App.jsx`)
+A: Using `@databricks/aibi-client` SDK in `frontend/src/components/DashboardEmbed.jsx`
 
 **Q: How does row-level security work?**  
-A: User context (`external_value`) is passed in token generation. In your dashboard SQL, use `__aibi_external_value` to filter data by the user's department (see line 147 in `app.py`)
+A: User context (`external_value`) is passed in token generation. In your dashboard SQL, use `__aibi_external_value` to filter data by the user's department (see line 122 in `app.py`)
 
 ## Key Dependencies
 
@@ -363,9 +335,6 @@ A: User context (`external_value`) is passed in token generation. In your dashbo
 
 ## Next Steps
 
-1. Set up your `.env` file with Databricks credentials
-2. Run backend and frontend
-3. Login as Alice or Bob
-4. Examine the code to understand the flow
-5. Customize for your use case
-6. Check the [Databricks AI/BI External Embedding](https://docs.databricks.com/aws/en/dashboards/embedding/external-embed#gsc.tab=0) and [Databricks SDK](https://www.npmjs.com/package/@databricks/aibi-client) documentation for more details.
+1. Examine the code to understand the flow
+2. Customize for your use case
+3. Check the [Databricks AI/BI External Embedding](https://docs.databricks.com/aws/en/dashboards/embedding/external-embed#gsc.tab=0) and [Databricks SDK](https://www.npmjs.com/package/@databricks/aibi-client) documentation for more details.
