@@ -7,7 +7,7 @@ A minimal template showing how to embed Databricks dashboards into external appl
 
 ## 📋 What This Template Shows
 
-1. **Backend (Flask)**: Authenticate users and mint Databricks OAuth tokens
+1. **Backend (Flask)**: Authenticate users and [generate user-specific Databricks OAuth tokens](https://docs.databricks.com/aws/en/dashboards/embedding/external-embed#gsc.tab=0)
 2. **Frontend (React)**: Use the [Databricks embedding SDK](https://www.npmjs.com/package/@databricks/aibi-client) to display dashboards
 3. **Row-Level Security**: Pass user context for data filtering with `__aibi_external_value`
 
@@ -157,28 +157,6 @@ const dashboard = new DatabricksDashboard({
 await dashboard.initialize()
 ```
 
-## Key Configuration
-
-### Row-Level Security
-
-The backend passes user context when minting tokens:
-```python
-# In mint_databricks_token() - passes department as external_value
-token_info_url = (
-    f"{workspace_url}/api/2.0/lakeview/dashboards/{dashboard_id}/published/tokeninfo"
-    f"?external_viewer_id={user_data['email']}"
-    f"&external_value={user_data['department']}"  # e.g., "Sales"
-)
-```
-
-In your Databricks dashboard dataset, filter using `__aibi_external_value`:
-```sql
-SELECT * FROM sales_data
-WHERE department = __aibi_external_value  -- Returns "Sales" for Alice, "Engineering" for Bob
-```
-
-This enables row-level security: each user only sees data for their department.
-
 ## 👥 Demo Users
 
 | Username | Department | Purpose |
@@ -244,37 +222,12 @@ npm run dev  # Runs on http://localhost:3000
       │  7. Embed dashboard   │                       │
       │     with Alice's      │                       │
       │     token in iframe   │                       │
-      │───────────────────────────────────────────────>│
+      │──────────────────────────────────────────────>│
       │                       │                       │
       │  8. Dashboard renders │                       │
       │     with Alice's data │                       │
-      │<───────────────────────────────────────────────│
+      │<──────────────────────────────────────────────│
 ```
-
-## Files You Should Read
-
-Start with these files to understand the core flow:
-
-1. **`backend/app.py`** - Token minting with Databricks OAuth, user sessions, RLS
-2. **`frontend/src/App.jsx`** - Login flow, API integration, user switching
-3. **`frontend/src/components/DashboardEmbed.jsx`** - Databricks SDK usage, automatic token refresh
-4. **`backend/.env.example`** - Required configuration template
-
-## Key Backend Functions
-
-| Function | Purpose |
-|----------|---------|
-| `mint_databricks_token()` | Creates OAuth token with user context |
-| `/api/dashboard/embed-config` | Returns dashboard config + token |
-
-## Key Frontend Components & Functions
-
-| Component/Function | Purpose |
-|-------------------|---------|
-| `App.jsx` | Main app - handles auth and state |
-| `DashboardEmbed.jsx` | Embeds dashboard using Databricks SDK |
-| `handleLogin()` | Sends credentials to backend |
-| `fetchDashboardConfig()` | Gets dashboard config and token |
 
 ## 🔑 Getting Databricks Credentials
 
@@ -291,16 +244,37 @@ Start with these files to understand the core flow:
 ## ❓ Common Questions
 
 **Q: Where is the OAuth token generated?**  
-A: In `backend/app.py`, function `mint_databricks_token()` (starts at line 55) using the 3-step OAuth flow
+A: In `backend/app.py`, function `mint_databricks_token()` (line 55) uses the 3-step OAuth flow to generate user-specific tokens.
 
 **Q: How does the frontend get the token?**  
-A: Calls `/api/dashboard/embed-config` endpoint which returns the token (line 216 in `app.py`)
+A: The frontend calls `/api/dashboard/embed-config` which returns the dashboard configuration and a fresh OAuth token (line 216 in `app.py`).
 
 **Q: How is the dashboard embedded?**  
-A: Using `@databricks/aibi-client` SDK in `frontend/src/components/DashboardEmbed.jsx`
+A: Using the `@databricks/aibi-client` SDK in `frontend/src/components/DashboardEmbed.jsx`. The SDK handles embedding, rendering, and automatic token refresh.
 
-**Q: How does row-level security work?**  
-A: User context (`external_value`) is passed in token generation. In your dashboard SQL, use `__aibi_external_value` to filter data by the user's department (see line 122 in `app.py`)
+**Q: How does row-level security (RLS) work?**  
+A: The backend passes user context (`external_viewer_id` and `external_value`) when minting tokens:
+```python
+# In mint_databricks_token() - passes department as external_value
+token_info_url = (
+    f"{workspace_url}/api/2.0/lakeview/dashboards/{dashboard_id}/published/tokeninfo"
+    f"?external_viewer_id={user_data['email']}"
+    f"&external_value={user_data['department']}"  # e.g., "Sales"
+)
+```
+
+In your Databricks dashboard SQL queries, use `__aibi_external_value` to filter data:
+```sql
+SELECT * FROM sales_data
+WHERE department = __aibi_external_value  -- Returns "Sales" for Alice, "Engineering" for Bob
+```
+
+**Q: What files should I read first?**  
+A: Start with:
+- `backend/app.py` - Token minting, authentication, RLS
+- `frontend/src/App.jsx` - Login flow and user management
+- `frontend/src/components/DashboardEmbed.jsx` - Dashboard SDK integration
+- `backend/.env.example` - Required configuration
 
 ## Key Dependencies
 
