@@ -2,6 +2,14 @@
 
 A minimal template showing how to embed Databricks dashboards into external applications with user authentication and row-level security.
 
+## Screenshots
+
+### Login Page
+![Login Page](img/Login%20Page.png)
+
+### Dashboard Page
+![Dashboard Page](img/Dashboard%20Page.png)
+
 ## What This Template Shows
 
 1. **Backend (Flask)**: Authenticate users and mint Databricks OAuth tokens
