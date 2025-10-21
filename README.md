@@ -2,13 +2,9 @@
 
 A minimal template showing how to embed Databricks dashboards into external applications with user authentication and row-level security.
 
-## Screenshots
-
-### Login Page
-![Login Page](img/Login%20Page.png)
-
-### Dashboard Page
-![Dashboard Page](img/Dashboard%20Page.png)
+<p align="center">
+  <img src="img/Dashboard Page.png" width="600">
+</p>
 
 ## What This Template Shows
 
@@ -43,7 +39,9 @@ aibi-external-embedding/
 
 ### 1. User Logs In
 
-
+<p align="center">
+  <img src="img/Login Page.png" width="600">
+</p>
 
 **Frontend** (`frontend/src/App.jsx`)
 ```javascript
