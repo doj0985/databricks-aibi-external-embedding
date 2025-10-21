@@ -2,11 +2,10 @@
 
 A minimal template showing how to embed Databricks dashboards into external applications with user authentication and row-level security.
 
-<p align="center">
-  <img src="img/Dashboard Page.png" width="600">
-</p>
+<img src="img/Dashboard Page.png" width="600">
 
-## What This Template Shows
+
+## 📋 What This Template Shows
 
 1. **Backend (Flask)**: Authenticate users and mint Databricks OAuth tokens
 2. **Frontend (React)**: Use the [Databricks embedding SDK](https://www.npmjs.com/package/@databricks/aibi-client) to display dashboards
@@ -39,9 +38,8 @@ aibi-external-embedding/
 
 ### 1. User Logs In
 
-<p align="center">
-  <img src="img/Login Page.png" width="600">
-</p>
+<img src="img/Login Page.png" width="600">
+
 
 **Frontend** (`frontend/src/App.jsx`)
 ```javascript
@@ -194,14 +192,14 @@ WHERE department = __aibi_external_value  -- Returns "Sales" for Alice, "Enginee
 
 This enables row-level security: each user only sees data for their department.
 
-## Demo Users
+## 👥 Demo Users
 
 | Username | Department | Purpose |
 |----------|-----------|---------|
 | `alice` | Sales | See sales data |
 | `bob` | Engineering | See engineering data |
 
-## Quick Setup
+## 🚀 Quick Setup
 
 ### 1. Backend Setup
 
@@ -303,7 +301,7 @@ Start with these files to understand the core flow:
 | `handleLogin()` | Sends credentials to backend |
 | `fetchDashboardConfig()` | Gets dashboard config and token |
 
-## Customization Points
+## 🔧 Customization Points
 
 1. **Add Real Authentication** (`backend/app.py`):
    - Replace `DUMMY_USERS` with database lookup
@@ -316,7 +314,7 @@ Start with these files to understand the core flow:
    - Support different views per user
 
 
-## Getting Databricks Credentials
+## 🔑 Getting Databricks Credentials
 
 1. **OAuth Credentials**:
    - Go to Databricks → Settings → Developer → OAuth Apps
@@ -332,7 +330,7 @@ Start with these files to understand the core flow:
    - Click your warehouse
    - Copy ID from URL or details
 
-## Common Questions
+## ❓ Common Questions
 
 **Q: Where is the OAuth token generated?**  
 A: In `backend/app.py`, function `mint_databricks_token()` (starts at line 57) using the official Databricks 3-step OAuth flow
