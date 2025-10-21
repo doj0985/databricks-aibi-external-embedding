@@ -276,19 +276,6 @@ Start with these files to understand the core flow:
 | `handleLogin()` | Sends credentials to backend |
 | `fetchDashboardConfig()` | Gets dashboard config and token |
 
-## 🔧 Customization Points
-
-1. **Add Real Authentication** (`backend/app.py`):
-   - Replace `DUMMY_USERS` with database lookup
-   - Add password hashing
-   - Integrate with OAuth providers
-
-2. **Multiple Dashboards** (`frontend/src/App.jsx`):
-   - Add dashboard selector
-   - Pass dashboard ID to backend
-   - Support different views per user
-
-
 ## 🔑 Getting Databricks Credentials
 
 1. **Service Principal Credentials**:
@@ -300,10 +287,6 @@ Start with these files to understand the core flow:
    - Open your dashboard
    - Copy ID from URL: `/sql/dashboards/{DASHBOARD_ID}`
 
-3. **Workspace ID**:
-   - Go to workspace settings or admin console
-   - Look for the numeric workspace ID
-   - Usually visible in workspace URL or settings
 
 ## ❓ Common Questions
 
