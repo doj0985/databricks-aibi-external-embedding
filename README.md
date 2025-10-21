@@ -291,19 +291,19 @@ Start with these files to understand the core flow:
 
 ## 🔑 Getting Databricks Credentials
 
-1. **OAuth Credentials**:
-   - Go to Databricks → Settings → Developer → OAuth Apps
-   - Create new app
+1. **Service Principal Credentials**:
+   - Go to Databricks → Settings → Identity and Access → Service Principals → Add Service Principals → Secrets
+   - Generate Secret
    - Copy Client ID and Secret
 
 2. **Dashboard ID**:
    - Open your dashboard
    - Copy ID from URL: `/sql/dashboards/{DASHBOARD_ID}`
 
-3. **Warehouse ID**:
-   - Go to SQL Warehouses
-   - Click your warehouse
-   - Copy ID from URL or details
+3. **Workspace ID**:
+   - Find in Databricks workspace URL
+   - Format: `https://[workspace-id].cloud.databricks.com`
+   - Or get from workspace settings
 
 ## ❓ Common Questions
 
