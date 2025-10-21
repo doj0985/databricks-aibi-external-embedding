@@ -273,7 +273,7 @@ Start with these files to understand the core flow:
 |-------------------|---------|
 | `App.jsx` | Main app - handles auth and state |
 | `DashboardEmbed.jsx` | Embeds dashboard using Databricks SDK |
-| `handleLogin()` | Sends username to backend |
+| `handleLogin()` | Sends credentials to backend |
 | `fetchDashboardConfig()` | Gets dashboard config and token |
 
 ## 🔧 Customization Points
