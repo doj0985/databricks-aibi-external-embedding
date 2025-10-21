@@ -194,7 +194,6 @@ const App = () => {
 
       {/* Dashboard embedding container */}
       <main className="dashboard-container">
-        {loading && <div className="loading">Loading dashboard...</div>}
         {error && <div className="error">{error}</div>}
         
         {dashboardConfig && (
