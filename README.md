@@ -301,9 +301,9 @@ Start with these files to understand the core flow:
    - Copy ID from URL: `/sql/dashboards/{DASHBOARD_ID}`
 
 3. **Workspace ID**:
-   - Find in Databricks workspace URL
-   - Format: `https://[workspace-id].cloud.databricks.com`
-   - Or get from workspace settings
+   - Go to workspace settings or admin console
+   - Look for the numeric workspace ID
+   - Usually visible in workspace URL or settings
 
 ## ❓ Common Questions
 
