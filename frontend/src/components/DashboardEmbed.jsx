@@ -44,7 +44,7 @@ const DashboardEmbed = ({ config, onError }) => {
           containerRef.current.innerHTML = ''
         }
 
-        // Initialize the Databricks Dashboard using the imported SDK
+            // Initialize the dashboard using the imported SDK
         // with automatic token refresh for seamless long-running sessions
         dashboardInstance.current = new DatabricksDashboard({
           instanceUrl: config.workspace_url,

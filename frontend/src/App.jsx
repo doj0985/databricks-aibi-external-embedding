@@ -4,7 +4,7 @@ import DashboardEmbed from './components/DashboardEmbed'
 import './App.css'
 
 /**
- * Main application component for Databricks Dashboard Embedding
+ * Main application component for AI/BI External Embedding
  * 
  * Handles:
  * - User authentication (login/logout)
@@ -129,7 +129,7 @@ const App = () => {
     return (
       <div className="app">
         <div className="login-container">
-          <h1>Databricks Dashboard Embedding</h1>
+          <h1>AI/BI External Embedding</h1>
           <p>Select a user to login:</p>
           <div className="user-selection">
             {AVAILABLE_USERS.map(user => (
@@ -155,7 +155,7 @@ const App = () => {
       {/* Header with user info and controls */}
       <header className="header">
         <div className="header-content">
-          <h1>Databricks Dashboard</h1>
+          <h1>AI/BI Dashboard</h1>
           
           <div className="user-info">
             <div className="current-user">

@@ -2,7 +2,7 @@
   "name": "databricks-embedding-frontend",
   "version": "1.0.0",
   "private": true,
-  "description": "Frontend for Databricks Dashboard Embedding Template",
+  "description": "Frontend for AI/BI External Embedding Template",
   "dependencies": {
     "@databricks/aibi-client": "^1.0.0",
     "axios": "^1.6.0",

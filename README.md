@@ -1,4 +1,4 @@
-# Databricks Dashboard Embedding Template
+# AI/BI External Embedding Template
 
 A minimal template showing how to embed Databricks dashboards into external applications with user authentication and row-level security.
 
@@ -34,6 +34,8 @@ aibi-external-embedding/
 ## How It Works: File Relationships
 
 ### 1. User Logs In
+
+
 
 **Frontend** (`frontend/src/App.jsx`)
 ```javascript
@@ -339,7 +341,7 @@ A: Using `@databricks/aibi-client` SDK in `frontend/src/components/DashboardEmbe
 A: Logs out current user, logs in new user, fetches new token (see `handleUserSwitch()` at line 94 in `App.jsx`)
 
 **Q: How does row-level security work?**  
-A: User context (`external_viewer_id` and `external_value`) is passed in token generation. In your dashboard SQL, use `aibi_external_value()` to filter data by the user's department (see line 147 in `app.py`)
+A: User context (`external_value`) is passed in token generation. In your dashboard SQL, use `__aibi_external_value` to filter data by the user's department (see line 147 in `app.py`)
 
 ## Key Dependencies
 
@@ -362,4 +364,4 @@ A: User context (`external_viewer_id` and `external_value`) is passed in token g
 3. Login as Alice or Bob
 4. Examine the code to understand the flow
 5. Customize for your use case
-6. Check the [Databricks SDK documentation](https://www.npmjs.com/package/@databricks/aibi-client) for advanced features
+6. Check the [Databricks AI/BI External Embedding](https://docs.databricks.com/aws/en/dashboards/embedding/external-embed#gsc.tab=0) and [Databricks SDK](https://www.npmjs.com/package/@databricks/aibi-client) documentation for more details.

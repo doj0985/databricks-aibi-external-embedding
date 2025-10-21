@@ -1,5 +1,5 @@
 """
-Flask Backend for Databricks Dashboard Embedding
+Flask Backend for AI/BI External Embedding
 Handles user authentication, OAuth token minting, and dashboard embedding context.
 """
 
