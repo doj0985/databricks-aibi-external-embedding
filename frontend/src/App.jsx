@@ -46,7 +46,7 @@ const App = () => {
   }
 
   /**
-   * Login with username/password
+   * Login with username (simplified for demo)
    */
   const handleLogin = async (username) => {
     setLoading(true)
@@ -55,10 +55,7 @@ const App = () => {
     try {
       const response = await axios.post(
         '/api/auth/login',
-        {
-          username: username,
-          password: 'password123' // Demo password
-        },
+        { username: username },
         { withCredentials: true }
       )
 

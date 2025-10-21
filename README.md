@@ -4,10 +4,9 @@ A minimal template showing how to embed Databricks dashboards into external appl
 
 ## What This Template Shows
 
-1. **Backend (Flask)**: How to authenticate users and mint Databricks OAuth tokens
-2. **Frontend (React)**: How to use the [Databricks embedding SDK](https://www.npmjs.com/package/@databricks/aibi-client) to display dashboards
-3. **User Context**: How to pass user information for row-level security
-4. **Automatic Token Refresh**: How to maintain seamless long-running dashboard sessions
+1. **Backend (Flask)**: Authenticate users and mint Databricks OAuth tokens
+2. **Frontend (React)**: Use the [Databricks embedding SDK](https://www.npmjs.com/package/@databricks/aibi-client) to display dashboards
+3. **Row-Level Security**: Pass user context for data filtering with `__aibi_external_value`
 
 ## Project Structure
 
@@ -38,12 +37,9 @@ aibi-external-embedding/
 
 **Frontend** (`frontend/src/App.jsx`)
 ```javascript
-// User clicks login → sends credentials to backend
+// User clicks login → sends username to backend
 const handleLogin = async (username) => {
-  await axios.post('/api/auth/login', {
-    username: username,
-    password: 'password123'
-  })
+  await axios.post('/api/auth/login', { username: username })
 }
 ```
 
@@ -51,7 +47,7 @@ const handleLogin = async (username) => {
 ```python
 @app.route('/api/auth/login', methods=['POST'])
 def login():
-    # Validates credentials
+    # Validates username
     # Creates user session
     session['user_id'] = user['id']
     return jsonify({'user': user})
@@ -131,59 +127,33 @@ def mint_databricks_token(user_data):
     return scoped_response.json()['access_token']
 ```
 
-### 4. Dashboard Embedding (with Automatic Token Refresh)
+### 4. Dashboard Embedding
 
 **Frontend** (`frontend/src/components/DashboardEmbed.jsx`)
 ```javascript
 import { DatabricksDashboard } from '@databricks/aibi-client'
 
-// Initialize the Databricks Dashboard using the official SDK
-// with automatic token refresh for seamless long-running sessions
+// Initialize dashboard with automatic token refresh
 const dashboard = new DatabricksDashboard({
   instanceUrl: config.workspace_url,
   workspaceId: config.workspace_id,
   dashboardId: config.dashboard_id,
-  token: config.embed_token,  // User-specific token from backend
+  token: config.embed_token,
   container: containerRef.current,
   
-  // SDK automatically calls this when token is close to expiration
+  // SDK calls this callback ~5 min before token expires
   getNewToken: async () => {
     const response = await axios.get('/api/dashboard/embed-config')
-    return response.data.embed_token  // Return fresh token
+    return response.data.embed_token
   }
 })
 
 await dashboard.initialize()
 ```
 
-**How Token Refresh Works:**
-- Dashboard uses token for ~1 hour (3600 seconds)
-- SDK detects when token is about to expire
-- Automatically calls `getNewToken()` to fetch fresh token
-- Backend mints new token, returns it
-- Dashboard continues seamlessly without reload
+## Key Configuration
 
-## Key Features
-
-### 1. Automatic Token Refresh
-
-The dashboard supports **seamless long-running sessions** without manual refreshes:
-
-- **SDK-managed**: The `@databricks/aibi-client` SDK automatically detects token expiration
-- **Callback-based**: `getNewToken()` function fetches fresh tokens from backend
-- **Zero disruption**: Dashboard continues running without reload or interruption
-- **User-transparent**: Users never see authentication errors or session breaks
-
-**Timeline Example:**
-```
-00:00 - Dashboard loads with Token A (expires at 01:00)
-00:55 - SDK detects expiration approaching
-00:55 - SDK calls getNewToken() → Backend mints Token B
-00:56 - Dashboard now uses Token B (expires at 01:56)
-... continues indefinitely
-```
-
-### 2. Backend → Frontend Communication
+### Backend → Frontend Communication
 
 **API Proxy** (`frontend/vite.config.js`):
 ```javascript
@@ -194,36 +164,27 @@ proxy: {
 }
 ```
 
-**Session Management**:
-- Backend uses Flask sessions to track logged-in users
-- Frontend includes credentials in requests: `withCredentials: true`
+**Session Management**: Flask sessions track logged-in users, frontend sends cookies with `withCredentials: true`
 
-**Environment Variables** (`backend/.env`):
-   ```ini
-   # Copy from .env.example and add your actual credentials
-   DATABRICKS_WORKSPACE_URL=https://your-workspace.cloud.databricks.com
-   DATABRICKS_CLIENT_ID=your-client-id
-   DATABRICKS_CLIENT_SECRET=your-client-secret
-   DATABRICKS_DASHBOARD_ID=your-dashboard-id
-   DATABRICKS_WAREHOUSE_ID=your-warehouse-id
-   ```
+### Row-Level Security
 
-### 3. Row-Level Security
-
-The token includes user context:
+The backend passes user context when minting tokens:
 ```python
-# Backend mints token with user info
-token = {
-    'email': 'alice@example.com',
-    'department': 'Sales'
-}
+# In mint_databricks_token() - passes department as external_value
+token_info_url = (
+    f"{workspace_url}/api/2.0/lakeview/dashboards/{dashboard_id}/published/tokeninfo"
+    f"?external_viewer_id={user_data['email']}"
+    f"&external_value={user_data['department']}"  # e.g., "Sales"
+)
 ```
 
-Your Databricks queries can use this:
+In your Databricks dashboard dataset, filter using `aibi_external_value`:
 ```sql
 SELECT * FROM sales_data
-WHERE department = current_user().department
+WHERE department = __aibi_external_value  -- Returns "Sales" for Alice, "Engineering" for Bob
 ```
+
+This enables row-level security: each user only sees data for their department.
 
 ## Demo Users
 
@@ -231,8 +192,6 @@ WHERE department = current_user().department
 |----------|-----------|---------|
 | `alice` | Sales | See sales data |
 | `bob` | Engineering | See engineering data |
-
-Both use password: `password123`
 
 ## Quick Setup
 
@@ -255,7 +214,6 @@ python app.py  # Runs on http://localhost:5000
 - ⚠️ **NEVER commit `.env` to version control** - it contains your real credentials
 - ✅ `.env` is already in `.gitignore` and will not be tracked by git
 - ✅ Only commit `.env.example` with placeholder values
-- ✅ All example passwords in code (`password123`) are for demo purposes only
 
 ### 2. Frontend Setup
 
@@ -314,36 +272,18 @@ npm run dev  # Runs on http://localhost:3000
 
 ## Files You Should Read
 
-1. **`backend/app.py`** (~277 lines)
-   - See how OAuth tokens are minted using Databricks OAuth flow
-   - Understand the API endpoints
-   - See how user context is passed for row-level security
+Start with these files to understand the core flow:
 
-2. **`frontend/src/App.jsx`** (~220 lines)
-   - See how login works
-   - Understand API integration
-   - See how user switching works
-
-3. **`frontend/src/components/DashboardEmbed.jsx`** (~131 lines)
-   - See how Databricks SDK (`@databricks/aibi-client`) is imported
-   - Understand dashboard initialization with OAuth token and automatic refresh
-   - See component lifecycle management
-
-4. **`backend/.env.example`**
-   - See what configuration is needed
-   - Template for your actual credentials in `.env`
-
-5. **`frontend/vite.config.js`**
-   - See how frontend connects to backend
-   - Understand the proxy setup for API calls
+1. **`backend/app.py`** - Token minting with Databricks OAuth, user sessions, RLS
+2. **`frontend/src/App.jsx`** - Login flow, API integration, user switching
+3. **`frontend/src/components/DashboardEmbed.jsx`** - Databricks SDK usage, automatic token refresh
+4. **`backend/.env.example`** - Required configuration template
 
 ## Key Backend Functions
 
 | Function | Purpose |
 |----------|---------|
 | `mint_databricks_token()` | Creates OAuth token with user context |
-| `@login_required` | Decorator protecting authenticated endpoints |
-| `/api/auth/login` | Authenticates user, creates session |
 | `/api/dashboard/embed-config` | Returns dashboard config + token |
 
 ## Key Frontend Components & Functions
@@ -354,7 +294,6 @@ npm run dev  # Runs on http://localhost:3000
 | `DashboardEmbed.jsx` | Embeds dashboard using Databricks SDK |
 | `handleLogin()` | Sends credentials to backend |
 | `fetchDashboardConfig()` | Gets dashboard config and token |
-| `handleUserSwitch()` | Switches to different user |
 
 ## Customization Points
 
@@ -368,15 +307,6 @@ npm run dev  # Runs on http://localhost:3000
    - Pass dashboard ID to backend
    - Support different views per user
 
-3. **Enhanced Security** (`backend/app.py`):
-   - Add rate limiting
-   - Implement CSRF protection
-   - Add request validation
-
-4. **Custom Styling** (`frontend/src/App.css`):
-   - Update colors and layout
-   - Add company branding
-   - Modify responsive breakpoints
 
 ## Getting Databricks Credentials
 
@@ -408,8 +338,8 @@ A: Using `@databricks/aibi-client` SDK in `frontend/src/components/DashboardEmbe
 **Q: How does user switching work?**  
 A: Logs out current user, logs in new user, fetches new token (see `handleUserSwitch()` at line 94 in `App.jsx`)
 
-**Q: Where is row-level security configured?**  
-A: User context (`external_viewer_id` and `external_value`) is passed in the token generation (lines 118-124 in `app.py`), enabling Databricks to filter data per user
+**Q: How does row-level security work?**  
+A: User context (`external_viewer_id` and `external_value`) is passed in token generation. In your dashboard SQL, use `aibi_external_value()` to filter data by the user's department (see line 147 in `app.py`)
 
 ## Key Dependencies
 

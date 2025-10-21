@@ -31,14 +31,12 @@ DUMMY_USERS = {
         'id': 'user_alice',
         'name': 'Alice Johnson',
         'email': 'alice@example.com',
-        'password': 'password123',  # In production, use hashed passwords
         'department': 'Sales'
     },
     'bob': {
         'id': 'user_bob',
         'name': 'Bob Smith',
         'email': 'bob@example.com',
-        'password': 'password123',  # In production, use hashed passwords
         'department': 'Engineering'
     }
 }
@@ -167,17 +165,16 @@ def mint_databricks_token(user_data):
 @app.route('/api/auth/login', methods=['POST'])
 def login():
     """
-    Authenticate user with username/password.
+    Authenticate user by username only (simplified for demo).
     In production, integrate with your actual authentication system.
     """
     data = request.get_json()
     username = data.get('username')
-    password = data.get('password')
     
-    # Validate credentials
+    # Validate username exists
     user = DUMMY_USERS.get(username)
-    if not user or user['password'] != password:
-        return jsonify({'error': 'Invalid credentials'}), 401
+    if not user:
+        return jsonify({'error': 'Invalid username'}), 401
     
     # Create session
     session['user_id'] = user['id']
