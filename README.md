@@ -295,3 +295,23 @@ A: Start with:
 1. Examine the code to understand the flow
 2. Customize for your use case
 3. Check the [Databricks AI/BI External Embedding](https://docs.databricks.com/aws/en/dashboards/embedding/external-embed#gsc.tab=0) and [Databricks SDK](https://www.npmjs.com/package/@databricks/aibi-client) documentation for more details.
+
+## How to get help
+
+Databricks support doesn't cover this content. For questions or bugs, please open a GitHub issue and the team will help on a best effort basis.
+
+
+## License
+
+&copy; 2025 Databricks, Inc. All rights reserved. The source in this notebook is provided subject to the Databricks License [https://databricks.com/db-license-source]. All included or referenced third party libraries are subject to the licenses set forth below.
+
+| Library | Description | License | Source |
+|---------|-------------|---------|--------|
+| [@databricks/aibi-client](https://www.npmjs.com/package/@databricks/aibi-client) | Official Databricks SDK for dashboard embedding | Proprietary | https://www.npmjs.com/package/@databricks/aibi-client |
+| [React](https://reactjs.org/) | JavaScript library for building user interfaces | MIT | https://github.com/facebook/react |
+| [Axios](https://axios-http.com/) | Promise-based HTTP client | MIT | https://github.com/axios/axios |
+| [Vite](https://vitejs.dev/) | Frontend build tool and dev server | MIT | https://github.com/vitejs/vite |
+| [Flask](https://flask.palletsprojects.com/) | Python web framework | BSD-3-Clause | https://github.com/pallets/flask |
+| [Flask-CORS](https://flask-cors.readthedocs.io/) | Cross-origin resource sharing for Flask | MIT | https://github.com/corydolphin/flask-cors |
+| [python-dotenv](https://github.com/theskumar/python-dotenv) | Environment variable management | BSD-3-Clause | https://github.com/theskumar/python-dotenv |
+| [requests](https://requests.readthedocs.io/) | HTTP library for Python | Apache-2.0 | https://github.com/psf/requests |
